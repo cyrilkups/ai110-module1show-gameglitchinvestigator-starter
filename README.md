@@ -26,12 +26,19 @@ It wrote the code, ran away, and now the game is unplayable.
 ## 📝 Document Your Experience
 
 - [ ] Describe the game's purpose.
+A Streamlit number-guessing game where the player tries to guess a secret number within a limited number of attempts.
+
 - [ ] Detail which bugs you found.
+Secret/state behavior was unstable across reruns, higher/lower hint logic was incorrect, and New Game did not fully reset gameplay state.
+
 - [ ] Explain what fixes you applied.
+st.session_state, corrected guess/hint logic (moved to logic_utils.py), and reset key fields (secret, status, history, attempts) on New Game.
 
 ## 📸 Demo
 
 - [ ] [Insert a screenshot of your fixed, winning game here]
+
+![alt text](<Screenshot 2026-03-04 at 9.54.13 PM.png>)
 
 ## 🚀 Stretch Features
 
