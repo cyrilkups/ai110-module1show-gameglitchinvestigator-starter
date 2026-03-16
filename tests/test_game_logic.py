@@ -8,12 +8,19 @@ def test_winning_guess():
     assert outcome == "Win"
 
 def test_guess_too_high():
-    outcome, _ = check_guess(60, 50)
+    outcome, message = check_guess(60, 50)
     assert outcome == "Too High"
+    assert message == "📉 Go LOWER!"
 
 def test_guess_too_low():
-    outcome, _ = check_guess(40, 50)
+    outcome, message = check_guess(40, 50)
     assert outcome == "Too Low"
+    assert message == "📈 Go HIGHER!"
+
+def test_guess_handles_numeric_string_secret():
+    outcome, message = check_guess(100, "50")
+    assert outcome == "Too High"
+    assert message == "📉 Go LOWER!"
 
 
 # --- parse_guess ---

@@ -33,7 +33,7 @@ An AI-generated approach mixed data types for the secret value (converting it to
 I treated a bug as fixed only when I could reproduce the old issue, apply the change, and then fail to reproduce it. I also checked that the fix did not break other gameplay behavior.
 - Describe at least one test you ran (manual or using pytest)  
   and what it showed you about your code.
-I ran `../.venv/bin/python -m pytest -q` and got `18 passed`. That confirmed the core logic functions (`check_guess`, `parse_guess`, `update_score`, `get_range_for_difficulty`) matched expected behavior.
+I ran `.venv/bin/python -m pytest -q` and got `19 passed`. That confirmed the core logic functions (`check_guess`, `parse_guess`, `update_score`, `get_range_for_difficulty`) matched expected behavior after the fixes. The added tests also checked the actual higher/lower hint messages and a numeric-string secret case, so they caught the exact bug that was previously slipping through. I also launched the app with `.venv/bin/python -m streamlit run app.py --server.headless true --server.port 8501` and confirmed it started without runtime errors.
 - Did AI help you design or understand any tests? How?
 Yes. AI helped map game rules into testable functions and suggested edge cases like invalid input and unknown difficulty defaults.
 

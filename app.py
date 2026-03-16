@@ -33,7 +33,8 @@ if "secret" not in st.session_state:
     st.session_state.secret = random.randint(low, high)
 
 if "attempts" not in st.session_state:
-    st.session_state.attempts = 1
+    #FIX: AI and I start attempts at 0 so the player gets the full limit.
+    st.session_state.attempts = 0
 
 if "score" not in st.session_state:
     st.session_state.score = 0
@@ -46,10 +47,12 @@ if "history" not in st.session_state:
 
 st.subheader("Make a guess")
 
+attempts_left = max(attempt_limit - st.session_state.attempts, 0)
+
 st.info(
     #FIX: AI and I updated UI text to use the active difficulty range.
     f"Guess a number between {low} and {high}. "
-    f"Attempts left: {attempt_limit - st.session_state.attempts}"
+    f"Attempts left: {attempts_left}"
 )
 
 with st.expander("Developer Debug Info"):
@@ -99,13 +102,9 @@ if submit:
         st.session_state.attempts += 1
         st.session_state.history.append(guess_int)
 
-        if st.session_state.attempts % 2 == 0:
-            # FIXME: Logic breaks here - converting secret to string causes inconsistent comparisons.
-            secret = str(st.session_state.secret)
-        else:
-            secret = st.session_state.secret
-
-        outcome, message = check_guess(guess_int, secret)
+        # FIXME (resolved): secret used to flip to a string here on even turns.
+        #FIX: AI and I keep the secret numeric on every guess so comparisons stay stable.
+        outcome, message = check_guess(guess_int, st.session_state.secret)
 
         if show_hint:
             st.warning(message)

@@ -41,23 +41,20 @@ def check_guess(guess, secret):
 
     outcome examples: "Win", "Too High", "Too Low"
     """
+    guess = int(guess)
+    secret = int(secret)
+
     if guess == secret:
         return "Win", "🎉 Correct!"
 
-    try:
-        if guess > secret:
-            # FIXME: Logic breaks here - message direction is reversed for a high guess.
-            return "Too High", "📈 Go HIGHER!"
-        else:
-            # FIXME: Logic breaks here - message direction is reversed for a low guess.
-            return "Too Low", "📉 Go LOWER!"
-    except TypeError:
-        g = str(guess)
-        if g == secret:
-            return "Win", "🎉 Correct!"
-        if g > secret:
-            return "Too High", "📈 Go HIGHER!"
-        return "Too Low", "📉 Go LOWER!"
+    if guess > secret:
+        # FIXME (resolved): this branch used to tell a high guess to go higher.
+        #FIX: AI and I corrected the hint direction and normalized values to ints.
+        return "Too High", "📉 Go LOWER!"
+
+    # FIXME (resolved): this branch used to tell a low guess to go lower.
+    #FIX: AI and I corrected the low-guess hint text so it guides the player up.
+    return "Too Low", "📈 Go HIGHER!"
 
 
 #FIX: AI and I moved score updates out of app.py for reuse.
