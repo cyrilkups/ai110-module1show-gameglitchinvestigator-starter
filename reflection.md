@@ -18,13 +18,13 @@ it looked like a simple Streamlit guessing game with a difficulty selector, gues
 ## 2. How did you use AI as a teammate?
 
 - Which AI tools did you use on this project (for example: ChatGPT, Gemini, Copilot)?
-Claude, GPT
+Claude, GPT, and Codex
 
 - Give one example of an AI suggestion that was correct (including what the AI suggested and how you verified the result).
-The AI suggested refactoring reusable game logic out of app.py and into logic_utils.py (for example: get_range_for_difficulty, parse_guess, update_score, and check_guess), then importing those functions back into the Streamlit app. This suggestion was correct because it separated UI from logic and made the code easier to test and debug.
+The AI suggested refactoring reusable game logic out of app.py and into logic_utils.py (for example: get_range_for_difficulty, parse_guess, update_score, and check_guess), then importing those functions back into the Streamlit app. This suggestion was correct because it separated UI from logic and made the code easier to test and debug. I verified that change by running pytest after the refactor and confirming the game still launched correctly.
 
 - Give one example of an AI suggestion that was incorrect or misleading (including what the AI suggested and how you verified the result).
-An AI-generated approach mixed data types for the secret value (converting it to a string on some attempts and comparing string/int values), which was meant to “handle” comparison issues. This was incorrect/misleading because it caused inconsistent higher/lower behavior and can produce wrong comparisons.
+An AI-generated approach mixed data types for the secret value (converting it to a string on some attempts and comparing string/int values), which was meant to “handle” comparison issues. This was incorrect/misleading because it caused inconsistent higher/lower behavior and can produce wrong comparisons. I verified that by checking the actual outputs from `check_guess` and seeing that some guesses produced the wrong hint direction before I removed the mixed-type path.
 ---
 
 ## 3. Debugging and testing your fixes
