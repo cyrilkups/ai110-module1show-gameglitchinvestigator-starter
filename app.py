@@ -1,7 +1,26 @@
 import random
 import streamlit as st
 #FIX: AI helped refactor shared game logic into logic_utils.py imports.
-from logic_utils import get_range_for_difficulty, parse_guess, update_score, check_guess
+from logic_utils import (
+    check_guess,
+    get_range_for_difficulty,
+    load_high_score,
+    parse_guess,
+    record_high_score,
+    update_score,
+)
+
+
+def render_high_score(placeholder, record):
+    with placeholder.container():
+        st.subheader("High Score")
+        if record["score"] > 0:
+            st.metric("Personal Best", record["score"])
+            st.caption(
+                f"{record['difficulty']} difficulty in {record['attempts']} attempt(s)"
+            )
+        else:
+            st.caption("No saved high score yet. Win a round to write one to disk.")
 
 
 st.set_page_config(page_title="Glitchy Guesser", page_icon="🎮")
@@ -28,6 +47,7 @@ low, high = get_range_for_difficulty(difficulty)
 
 st.sidebar.caption(f"Range: {low} to {high}")
 st.sidebar.caption(f"Attempts allowed: {attempt_limit}")
+high_score_placeholder = st.sidebar.empty()
 
 if "secret" not in st.session_state:
     st.session_state.secret = random.randint(low, high)
@@ -44,6 +64,13 @@ if "status" not in st.session_state:
 
 if "history" not in st.session_state:
     st.session_state.history = []
+
+if "high_score" not in st.session_state:
+    #FEATURE: AI agent helped split file persistence into logic_utils.py so
+    # app.py only has to load and render the saved record.
+    st.session_state.high_score = load_high_score()
+
+render_high_score(high_score_placeholder, st.session_state.high_score)
 
 st.subheader("Make a guess")
 
@@ -77,6 +104,9 @@ with col3:
 
 if new_game:
     st.session_state.attempts = 0
+    #FEATURE: AI agent suggested resetting the round score so the saved
+    # high score compares one complete game against another.
+    st.session_state.score = 0
     #FIX: AI and I reset secret using current difficulty range.
     st.session_state.secret = random.randint(low, high)
     #FIX: AI and I reset state so New Game fully restarts play.
@@ -118,6 +148,14 @@ if submit:
         if outcome == "Win":
             st.balloons()
             st.session_state.status = "won"
+            st.session_state.high_score, is_new_high_score = record_high_score(
+                score=st.session_state.score,
+                difficulty=difficulty,
+                attempts=st.session_state.attempts,
+            )
+            render_high_score(high_score_placeholder, st.session_state.high_score)
+            if is_new_high_score:
+                st.success("New high score saved! It will still be here next time.")
             st.success(
                 f"You won! The secret was {st.session_state.secret}. "
                 f"Final score: {st.session_state.score}"

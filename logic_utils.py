@@ -1,3 +1,14 @@
+import json
+from pathlib import Path
+
+
+HIGH_SCORE_FILE = Path(__file__).resolve().parent / ".streamlit" / "high_score.json"
+
+
+def _default_high_score():
+    return {"score": 0, "difficulty": "", "attempts": 0}
+
+
 #FIX: AI and I moved reusable difficulty logic out of app.py.
 def get_range_for_difficulty(difficulty: str):
     """Return (low, high) inclusive range for a given difficulty."""
@@ -75,3 +86,62 @@ def update_score(current_score: int, outcome: str, attempt_number: int):
         return current_score - 5
 
     return current_score
+
+
+#FEATURE: AI agent helped plan a file-backed high score flow so persistence
+# lives in logic_utils.py and the Streamlit app can stay focused on UI state.
+def load_high_score(path=HIGH_SCORE_FILE):
+    """Load the saved high score record from disk."""
+    score_path = Path(path)
+
+    if not score_path.exists():
+        return _default_high_score()
+
+    try:
+        payload = json.loads(score_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, TypeError):
+        return _default_high_score()
+
+    try:
+        score = max(int(payload.get("score", 0)), 0)
+        attempts = max(int(payload.get("attempts", 0)), 0)
+    except (TypeError, ValueError, AttributeError):
+        return _default_high_score()
+
+    difficulty = payload.get("difficulty", "")
+    if not isinstance(difficulty, str):
+        difficulty = ""
+
+    return {
+        "score": score,
+        "difficulty": difficulty,
+        "attempts": attempts,
+    }
+
+
+def save_high_score(record, path=HIGH_SCORE_FILE):
+    """Persist a high score record to disk and return the saved payload."""
+    payload = {
+        "score": max(int(record.get("score", 0)), 0),
+        "difficulty": str(record.get("difficulty", "")),
+        "attempts": max(int(record.get("attempts", 0)), 0),
+    }
+    score_path = Path(path)
+    score_path.parent.mkdir(parents=True, exist_ok=True)
+    score_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    return payload
+
+
+def record_high_score(score: int, difficulty: str, attempts: int, path=HIGH_SCORE_FILE):
+    """Save a new high score if it beats the stored record."""
+    current = load_high_score(path)
+    candidate = {
+        "score": max(int(score), 0),
+        "difficulty": difficulty,
+        "attempts": max(int(attempts), 0),
+    }
+
+    if candidate["score"] > current["score"]:
+        return save_high_score(candidate, path), True
+
+    return current, False

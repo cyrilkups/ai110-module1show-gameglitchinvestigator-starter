@@ -37,12 +37,15 @@ Winning game after the repairs:
 
 ![Winning game after the fixes](assets/demo-winning-game.png)
 
+
 Challenge 1: Advanced Edge-Case Testing
 
-I added regression coverage for the corrected hint text and for mixed-type secret comparisons, then reran the full pytest suite.
+I added edge-case tests for three inputs that could still trip up the game: negative integers, negative decimals, and extremely large numeric values. The expanded pytest suite verifies that `parse_guess` accepts those inputs without crashing and that the game logic still returns the correct higher/lower hint for a huge guess.
 
-![Pytest results showing passing tests](assets/pytest-results.png)
+![Pytest command and passing edge-case test results](assets/pytest-results.png)
 
 ## 🚀 Stretch Features
 
-Challenge 4 was not completed for this submission.
+Feature expansion completed: I added a persistent high-score tracker that saves the best finished round to `.streamlit/high_score.json` and shows it in the sidebar every time the app loads.
+
+The agent contribution was in planning the split of responsibilities: the AI agent proposed keeping file I/O in `logic_utils.py` while `app.py` handled only Streamlit state and rendering. I still verified the behavior myself with pytest coverage for missing files, invalid score data, and "only save if the new score is better" logic.
